@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WEB予約 | Café & Bar Sereness</title>
+    <style>
+        :root {
+            --primary-bg: #FAFAFA;
+            --text-main: #333333;
+            --accent-color: #A68B5B;
+        }
+        body { font-family: "Noto Serif JP", "Hiragino Mincho ProN", serif; background-color: var(--primary-bg); color: var(--text-main); margin: 0; padding: 0; }
+        
+        header { background-color: var(--text-main); padding: 15px; text-align: center; position: relative;}
+        .header-title { color: #fff; font-size: 1.2em; letter-spacing: 0.1em; }
+        .back-btn { position: absolute; left: 15px; top: 15px; color: #fff; text-decoration: none; font-size: 1em; }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 30px 20px; }
+        h1 { text-align: center; font-size: 1.3em; border-bottom: 1px solid var(--accent-color); padding-bottom: 10px; margin-bottom: 30px; letter-spacing: 0.1em; color: var(--text-main);}
+
+        .form-group { margin-bottom: 25px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 0.95em; color: #444; }
+        .required { color: #d9534f; font-size: 0.8em; margin-left: 5px; vertical-align: top; }
+        
+        input[type="text"], input[type="tel"], input[type="date"], select, textarea {
+            width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; font-family: inherit;
+        }
+        textarea { resize: vertical; min-height: 100px; }
+
+        /* 目的・性別の選択ボタンデザイン */
+        .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .radio-label {
+            position: relative; flex: 1; min-width: 30%; text-align: center; border: 1px solid #ccc; border-radius: 4px; padding: 15px 5px; cursor: pointer; background: #fff; transition: 0.2s; font-size: 0.9em; font-weight: bold; display: flex; align-items: center; justify-content: center;
+        }
+        .radio-label input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+        .radio-label.selected { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
+
+        .btn-submit {
+            display: block; width: 100%; background-color: var(--accent-color); color: white; border: none; padding: 18px; font-size: 1.1em; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 40px; letter-spacing: 0.1em; transition: 0.3s; box-sizing: border-box;
+        }
+        .btn-submit:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        #loading, #success-msg { display: none; text-align: center; padding: 40px 20px; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--accent-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .note-text { font-size: 0.8em; color: #666; margin-top: 5px; line-height: 1.5; }
+
+        @media (max-width: 480px) {
+            .radio-label { min-width: 100%; } /* スマホでは1列に並べる */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="back-btn">＜ 戻る</a>
+        <div class="header-title">Café & Bar Sereness</div>
+    </header>
+
+    <div class="container" id="form-container">
+        <h1>WEBご予約フォーム</h1>
+
+        <div class="form-group">
+            <label>ご予約希望日 <span class="required">必須</span></label>
+            <input type="date" id="res-date" required>
+        </div>
+
+        <div class="form-group">
+            <label>ご来店の目的 <span class="required">必須</span></label>
+            <div class="radio-group" id="purpose-group">
+                <label class="radio-label"><input type="radio" name="purpose" value="相席希望あり">相席希望あり</label>
+                <label class="radio-label"><input type="radio" name="purpose" value="相席希望なし">相席希望なし</label>
+                <label class="radio-label"><input type="radio" name="purpose" value="相談">相談</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>ご来店予定時間 <span class="required">必須</span></label>
+            <select id="res-time" required>
+                <option value="">選択してください</option>
+                <optgroup label="Café Time (14:00-18:00)">
+                    <option value="14:00">14:00</option><option value="14:30">14:30</option>
+                    <option value="15:00">15:00</option><option value="15:30">15:30</option>
+                    <option value="16:00">16:00</option><option value="16:30">16:30</option>
+                    <option value="17:00">17:00</option>
+                </optgroup>
+                <optgroup label="Bar Time (20:00-25:00)">
+                    <option value="20:00">20:00</option><option value="20:30">20:30</option>
+                    <option value="21:00">21:00</option><option value="21:30">21:30</option>
+                    <option value="22:00">22:00</option><option value="22:30">22:30</option>
+                    <option value="23:00">23:00</option><option value="23:30">23:30</option>
+                    <option value="24:00">24:00</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>お名前（ニックネーム可） <span class="required">必須</span></label>
+            <input type="text" id="res-name" placeholder="例：セレネス 太郎" required>
+        </div>
+
+        <div class="form-group">
+            <label>性別 <span class="required">必須</span></label>
+            <div class="radio-group" id="gender-group">
+                <label class="radio-label"><input type="radio" name="gender" value="男性">男性</label>
+                <label class="radio-label"><input type="radio" name="gender" value="女性">女性</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>ご利用人数 <span class="required">必須</span></label>
+            <select id="res-people" required>
+                <option value="1">1名様</option>
+                <option value="2">2名様</option>
+                <option value="3">3名様</option>
+                <option value="4">4名様</option>
+                <option value="5以上">5名様以上（備考欄に記入）</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>お電話番号 <span class="required">必須</span></label>
+            <input type="tel" id="res-phone" placeholder="例：09012345678" required>
+        </div>
+
+        <div class="form-group">
+            <label>備考・ご要望など</label>
+            <textarea id="res-note" placeholder="何かあればご記入ください"></textarea>
+        </div>
+
+        <button type="button" class="btn-submit" id="btn-submit" onclick="submitReservation()">予約を申し込む</button>
+    </div>
+
+    <div class="container" id="loading">
+        <div class="spinner"></div>
+        <p>予約を送信しています...</p>
+    </div>
+
+    <div class="container" id="success-msg">
+        <h2 style="color: var(--accent-color);">ご予約を受け付けました</h2>
+        <p style="line-height: 1.8; margin-top: 20px; margin-bottom: 40px;">
+            気をつけてご来店くださいませ。
+        </p>
+        
+        <button class="btn-submit" onclick="returnToForm()" style="text-align: center;">戻る</button>
+    </div>
+
+    <script>
+        // ★GASのURL★
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbw3lwm9jpy0xD5Ou5SU_1zerxmdwaVzm3S-tVA80NQ_355QsH_dy0s_GlyC1zBa6cTblA/exec";
+
+        window.onload = () => {
+            const params = new URLSearchParams(window.location.search);
+            const dateParam = params.get('date');
+            if (dateParam) document.getElementById('res-date').value = dateParam;
+            
+            initSelectionUI('purpose');
+            initSelectionUI('gender');
+        };
+
+        function initSelectionUI(name) {
+            const inputs = document.querySelectorAll(`input[name="${name}"]`);
+            inputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    inputs.forEach(i => i.parentElement.classList.remove('selected'));
+                    if (this.checked) this.parentElement.classList.add('selected');
+                });
+            });
+        }
+
+        function submitReservation() {
+            const date = document.getElementById('res-date').value;
+            const time = document.getElementById('res-time').value;
+            const name = document.getElementById('res-name').value.trim();
+            const gender = document.querySelector('input[name="gender"]:checked')?.value;
+            const purpose = document.querySelector('input[name="purpose"]:checked')?.value;
+            const people = document.getElementById('res-people').value;
+            const phone = document.getElementById('res-phone').value.trim();
+            const note = document.getElementById('res-note').value.trim();
+
+            if (!date || !time || !name || !gender || !purpose || !phone) {
+                alert("必須項目が入力されていません。");
+                return;
+            }
+
+            const record = {
+                id: Date.now(),
+                date: date,
+                time: time,
+                name: name,
+                gender: gender,
+                people: people,
+                phone: phone,
+                purpose: purpose,
+                note: note,
+                status: "未確認" 
+            };
+
+            document.getElementById('form-container').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ type: 'reserve_save', record: record })
+            })
+            .then(res => res.json())
+            .then(res => {
+                document.getElementById('loading').style.display = 'none';
+                if(res.status === 'success') {
+                    document.getElementById('success-msg').style.display = 'block';
+                } else {
+                    alert("送信に失敗しました。");
+                    document.getElementById('form-container').style.display = 'block';
+                }
+            })
+            .catch(err => {
+                document.getElementById('loading').style.display = 'none';
+                alert("通信エラーが発生しました。");
+                document.getElementById('form-container').style.display = 'block';
+            });
+        }
+
+        // ▼ 追加：「戻る」ボタンを押した時にフォームを初期化して再表示する処理 ▼
+        function returnToForm() {
+            // 入力内容をリセット
+            document.getElementById('res-time').value = '';
+            document.getElementById('res-name').value = '';
+            document.getElementById('res-phone').value = '';
+            document.getElementById('res-note').value = '';
+            document.getElementById('res-people').value = '1';
+            
+            // 選択ボタンのリセット
+            document.querySelectorAll('input[name="purpose"]').forEach(i => { i.checked = false; i.parentElement.classList.remove('selected'); });
+            document.querySelectorAll('input[name="gender"]').forEach(i => { i.checked = false; i.parentElement.classList.remove('selected'); });
+
+            // 画面をフォームに切り替えて、一番上までスクロール
+            document.getElementById('success-msg').style.display = 'none';
+            document.getElementById('form-container').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
