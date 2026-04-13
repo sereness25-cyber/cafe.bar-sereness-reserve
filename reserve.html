@@ -16,30 +16,32 @@
         .header-title { color: #fff; font-size: 1.2em; letter-spacing: 0.1em; }
         .back-btn { position: absolute; left: 15px; top: 15px; color: #fff; text-decoration: none; font-size: 1em; }
 
-        .container { max-width: 600px; margin: 0 auto; padding: 30px 20px; }
+        .container { max-width: 600px; margin: 0 auto; padding: 30px 20px; box-sizing: border-box; }
         h1 { text-align: center; font-size: 1.3em; border-bottom: 1px solid var(--accent-color); padding-bottom: 10px; margin-bottom: 30px; letter-spacing: 0.1em; color: var(--text-main);}
 
         .form-group { margin-bottom: 25px; }
         label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 0.95em; color: #444; }
         .required { color: #d9534f; font-size: 0.8em; margin-left: 5px; vertical-align: top; }
         
+        /* スマホでの自動ズーム防止のために font-size: 16px 固定 */
         input[type="text"], input[type="tel"], input[type="date"], select, textarea {
-            width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; font-family: inherit;
+            width: 100%; padding: 15px 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; font-family: inherit; background-color: #fff;
         }
         textarea { resize: vertical; min-height: 100px; }
 
-        /* 目的・性別の選択ボタンデザイン */
+        /* 目的・性別の選択ボタンデザイン（スマホ特化の特大ボタン） */
         .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
         .radio-label {
-            position: relative; flex: 1; min-width: 30%; text-align: center; border: 1px solid #ccc; border-radius: 4px; padding: 15px 5px; cursor: pointer; background: #fff; transition: 0.2s; font-size: 0.9em; font-weight: bold; display: flex; align-items: center; justify-content: center;
+            position: relative; flex: 1; min-width: 30%; text-align: center; border: 1px solid #ccc; border-radius: 6px; padding: 16px 5px; cursor: pointer; background: #fff; transition: 0.2s; font-size: 0.95em; font-weight: bold; display: flex; align-items: center; justify-content: center;
         }
         .radio-label input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
-        .radio-label.selected { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
+        .radio-label.selected { background: var(--accent-color); color: #fff; border-color: var(--accent-color); box-shadow: 0 2px 5px rgba(166,139,91,0.3); }
 
         .btn-submit {
-            display: block; width: 100%; background-color: var(--accent-color); color: white; border: none; padding: 18px; font-size: 1.1em; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 40px; letter-spacing: 0.1em; transition: 0.3s; box-sizing: border-box;
+            display: block; width: 100%; background-color: var(--accent-color); color: white; border: none; padding: 18px; font-size: 1.1em; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 40px; letter-spacing: 0.1em; transition: 0.3s; box-sizing: border-box; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
-        .btn-submit:disabled { background-color: #ccc; cursor: not-allowed; }
+        .btn-submit:active { transform: translateY(2px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-submit:disabled { background-color: #ccc; cursor: not-allowed; box-shadow: none; }
 
         #loading, #success-msg { display: none; text-align: center; padding: 40px 20px; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--accent-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
@@ -47,8 +49,11 @@
 
         .note-text { font-size: 0.8em; color: #666; margin-top: 5px; line-height: 1.5; }
 
-        @media (max-width: 480px) {
-            .radio-label { min-width: 100%; } /* スマホでは1列に並べる */
+        /* ▼ スマホ用レイアウト調整 ▼ */
+        @media (max-width: 600px) {
+            body { background-color: #fff; } /* グレーの余白を消して全画面化 */
+            .container { padding: 25px 15px; }
+            .radio-label { min-width: 100%; padding: 18px 5px; font-size: 1em;} /* 縦並びのデカボタンに */
         }
     </style>
 </head>
@@ -140,24 +145,18 @@
 
     <div class="container" id="success-msg">
         <h2 style="color: var(--accent-color);">ご予約を受け付けました</h2>
-        <p style="line-height: 1.8; margin-top: 20px; margin-bottom: 40px;">
-            気をつけてご来店くださいませ。
-        </p>
-        
+        <p style="line-height: 1.8; margin-top: 20px; margin-bottom: 40px;">気をつけてご来店くださいませ。</p>
         <button class="btn-submit" onclick="returnToForm()" style="text-align: center;">戻る</button>
     </div>
 
     <script>
-        // ★GASのURL★
         const GAS_URL = "https://script.google.com/macros/s/AKfycbw3lwm9jpy0xD5Ou5SU_1zerxmdwaVzm3S-tVA80NQ_355QsH_dy0s_GlyC1zBa6cTblA/exec";
 
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
             const dateParam = params.get('date');
             if (dateParam) document.getElementById('res-date').value = dateParam;
-            
-            initSelectionUI('purpose');
-            initSelectionUI('gender');
+            initSelectionUI('purpose'); initSelectionUI('gender');
         };
 
         function initSelectionUI(name) {
@@ -180,62 +179,35 @@
             const phone = document.getElementById('res-phone').value.trim();
             const note = document.getElementById('res-note').value.trim();
 
-            if (!date || !time || !name || !gender || !purpose || !phone) {
-                alert("必須項目が入力されていません。");
-                return;
-            }
+            if (!date || !time || !name || !gender || !purpose || !phone) return alert("必須項目が入力されていません。");
 
-            const record = {
-                id: Date.now(),
-                date: date,
-                time: time,
-                name: name,
-                gender: gender,
-                people: people,
-                phone: phone,
-                purpose: purpose,
-                note: note,
-                status: "未確認" 
-            };
+            const record = { id: Date.now(), date, time, name, gender, people, phone, purpose, note, status: "未確認" };
 
             document.getElementById('form-container').style.display = 'none';
             document.getElementById('loading').style.display = 'block';
+            window.scrollTo(0, 0);
 
-            fetch(GAS_URL, {
-                method: 'POST',
-                body: JSON.stringify({ type: 'reserve_save', record: record })
-            })
+            fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ type: 'reserve_save', record: record }) })
             .then(res => res.json())
             .then(res => {
                 document.getElementById('loading').style.display = 'none';
-                if(res.status === 'success') {
-                    document.getElementById('success-msg').style.display = 'block';
-                } else {
-                    alert("送信に失敗しました。");
-                    document.getElementById('form-container').style.display = 'block';
-                }
+                if(res.status === 'success') document.getElementById('success-msg').style.display = 'block';
+                else { alert("送信に失敗しました。"); document.getElementById('form-container').style.display = 'block'; }
             })
             .catch(err => {
                 document.getElementById('loading').style.display = 'none';
-                alert("通信エラーが発生しました。");
-                document.getElementById('form-container').style.display = 'block';
+                alert("通信エラーが発生しました。"); document.getElementById('form-container').style.display = 'block';
             });
         }
 
-        // ▼ 追加：「戻る」ボタンを押した時にフォームを初期化して再表示する処理 ▼
         function returnToForm() {
-            // 入力内容をリセット
             document.getElementById('res-time').value = '';
             document.getElementById('res-name').value = '';
             document.getElementById('res-phone').value = '';
             document.getElementById('res-note').value = '';
             document.getElementById('res-people').value = '1';
+            document.querySelectorAll('input[name="purpose"], input[name="gender"]').forEach(i => { i.checked = false; i.parentElement.classList.remove('selected'); });
             
-            // 選択ボタンのリセット
-            document.querySelectorAll('input[name="purpose"]').forEach(i => { i.checked = false; i.parentElement.classList.remove('selected'); });
-            document.querySelectorAll('input[name="gender"]').forEach(i => { i.checked = false; i.parentElement.classList.remove('selected'); });
-
-            // 画面をフォームに切り替えて、一番上までスクロール
             document.getElementById('success-msg').style.display = 'none';
             document.getElementById('form-container').style.display = 'block';
             window.scrollTo(0, 0);

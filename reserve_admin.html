@@ -6,12 +6,12 @@
     <title>【予約管理】セレネス・ダッシュボード</title>
     <style>
         body { font-family: sans-serif; background-color: #f4f4f4; margin: 0; padding: 15px; color: #333; }
-        .app-container { background: #fff; max-width: 900px; margin: 0 auto; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative;}
+        .app-container { background: #fff; max-width: 900px; margin: 0 auto; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; box-sizing: border-box;}
         h1 { font-size: 1.3em; border-bottom: 2px solid #A68B5B; padding-bottom: 10px; margin-top: 0; margin-bottom: 20px; text-align: center; color: #333;}
         
         /* タブデザイン */
-        .tab-wrapper { display: flex; gap: 5px; margin-bottom: 20px; flex-wrap: wrap;}
-        .tab-btn { flex: 1; padding: 12px 2px; border: 1px solid #ccc; background: #f9f9f9; color: #666; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 0.85em; text-align: center; transition: 0.2s; min-width: 80px;}
+        .tab-wrapper { display: flex; gap: 5px; margin-bottom: 20px; flex-wrap: nowrap; overflow-x: auto;}
+        .tab-btn { flex: 1; padding: 12px 2px; border: 1px solid #ccc; background: #f9f9f9; color: #666; cursor: pointer; border-radius: 6px; font-weight: bold; font-size: 0.85em; text-align: center; transition: 0.2s; white-space: nowrap;}
         .tab-btn.active { background: #A68B5B; color: white; border-color: #A68B5B; }
 
         /* カレンダーのスタイル */
@@ -31,51 +31,69 @@
         .cal-s { color: #7c5ba6; }
 
         /* 編集バナー */
-        #edit-banner { background: #f0ad4e; color: white; text-align: center; padding: 10px; font-weight: bold; border-radius: 4px; margin-bottom: 15px; display: none; font-size: 0.9em;}
+        #edit-banner { background: #f0ad4e; color: white; text-align: center; padding: 12px; font-weight: bold; border-radius: 6px; margin-bottom: 15px; display: none; font-size: 0.9em; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
 
         /* 予約詳細エリア */
         .day-detail-area { margin-top: 20px; padding: 15px; background: #fafafa; border-radius: 8px; border: 1px solid #eee; display: none; }
         .day-detail-title { font-size: 1.1em; font-weight: bold; color: #A68B5B; margin-bottom: 15px; border-left: 4px solid #A68B5B; padding-left: 10px; display: flex; justify-content: space-between; align-items: center;}
-        .btn-add-inline { background: #5b7da6; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.7em; cursor: pointer; }
+        .btn-add-inline { background: #5b7da6; color: white; border: none; padding: 8px 12px; border-radius: 4px; font-size: 0.8em; font-weight: bold; cursor: pointer; }
 
-        /* ▼ 新しい予約カードのデザイン（見やすさ特化） ▼ */
+        /* 予約カード（見やすさ特化） */
         .res-card { display: flex; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px; padding: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); align-items: flex-start; }
         .res-time { font-size: 1.4em; font-weight: bold; color: #A68B5B; width: 75px; flex-shrink: 0; padding-top: 2px; letter-spacing: -0.5px;}
         .res-info { flex-grow: 1; min-width: 0; }
-        .res-name { font-size: 1.1em; font-weight: bold; color: #333; display: block; margin-bottom: 6px; }
+        .res-name { font-size: 1.15em; font-weight: bold; color: #333; display: block; margin-bottom: 8px; }
         
         .res-tags { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
-        .tag { font-size: 0.75em; padding: 3px 8px; border-radius: 4px; font-weight: bold; white-space: nowrap; }
+        .tag { font-size: 0.8em; padding: 4px 8px; border-radius: 4px; font-weight: bold; white-space: nowrap; }
         .tag-purpose { background: #fdf5e6; color: #A68B5B; border: 1px solid #f0e0c0; }
         .tag-m { background: #eef4fb; color: #5b7da6; border: 1px solid #d0e0f0; }
         .tag-f { background: #fdf2f2; color: #d9534f; border: 1px solid #f0d0d0; }
         .tag-people { background: #eee; color: #555; }
         
-        .res-contact { font-size: 0.85em; margin-bottom: 4px; color: #666; }
-        .res-note { font-size: 0.85em; color: #666; background: #fafafa; padding: 8px; border-radius: 4px; margin-top: 5px; border: 1px dashed #ccc;}
+        .res-contact { font-size: 0.9em; margin-bottom: 6px; color: #666; font-weight: bold;}
+        .res-note { font-size: 0.85em; color: #666; background: #fafafa; padding: 10px; border-radius: 4px; margin-top: 5px; border: 1px dashed #ccc; line-height: 1.5;}
         
         .res-actions-new { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; }
-        .btn-edit-new, .btn-del-new { padding: 6px 15px; border-radius: 4px; font-size: 0.8em; cursor: pointer; border: none; font-weight: bold; }
+        .btn-edit-new, .btn-del-new { padding: 8px 15px; border-radius: 4px; font-size: 0.85em; cursor: pointer; border: none; font-weight: bold; }
         .btn-edit-new { background: #eef4fb; color: #5b7da6; }
         .btn-del-new { background: #fdf2f2; color: #d9534f; }
 
         /* 入力フォーム用スタイル */
-        label { display: block; margin-top: 15px; font-weight: bold; font-size: 0.85em; color: #555;}
-        input, select, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; font-family: inherit;}
+        label { display: block; margin-top: 15px; font-weight: bold; font-size: 0.9em; color: #555;}
+        input, select, textarea { width: 100%; padding: 15px 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; font-family: inherit;}
         .radio-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;}
-        .radio-label { position: relative; flex: 1; min-width: 30%; text-align: center; border: 1px solid #ccc; border-radius: 4px; padding: 12px 5px; cursor: pointer; background: #fff; transition: 0.2s; font-size: 0.85em; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+        .radio-label { position: relative; flex: 1; min-width: 30%; text-align: center; border: 1px solid #ccc; border-radius: 6px; padding: 15px 5px; cursor: pointer; background: #fff; transition: 0.2s; font-size: 0.9em; font-weight: bold; display: flex; align-items: center; justify-content: center; }
         .radio-label input { position: absolute; opacity: 0; }
-        .radio-label.selected { background: #A68B5B; color: #fff; border-color: #A68B5B; }
-        .btn-submit { background-color: #A68B5B; color: white; border: none; padding: 16px; margin-top: 25px; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1em; }
+        .radio-label.selected { background: #A68B5B; color: #fff; border-color: #A68B5B; box-shadow: 0 2px 5px rgba(166,139,91,0.3);}
+        .btn-submit { background-color: #A68B5B; color: white; border: none; padding: 18px; margin-top: 25px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1.1em; box-shadow: 0 4px 10px rgba(0,0,0,0.15);}
 
-        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9em; display: none; z-index: 3000; }
+        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 15px 24px; border-radius: 30px; font-size: 0.95em; display: none; z-index: 3000; font-weight: bold;}
         #loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 2000; display: flex; justify-content: center; align-items: center; border-radius: 8px; font-weight: bold; color: #A68B5B; flex-direction: column;}
         
-        @media (max-width: 700px) {
-            body { padding: 0; }
-            .app-container { max-width: 100%; border-radius: 0; padding: 15px 10px; }
-            .cal-table td { height: 75px; }
+        /* ▼ スマホ用 超最適化レイアウト ▼ */
+        @media (max-width: 600px) {
+            body { padding: 0; background-color: #fff;}
+            .app-container { max-width: 100%; border-radius: 0; padding: 15px 10px; box-shadow: none;}
+            
+            /* タブの文字とパディングを調整して1列に収める */
+            .tab-btn { font-size: 0.75em; padding: 10px 2px; min-width: 0; letter-spacing: -0.5px;}
+            
+            /* カレンダーの縮小対応 */
+            .cal-table td { height: 65px; padding: 2px; }
+            .cal-day-num { font-size: 0.8em; margin-bottom: 2px; }
+            .cal-res-info { font-size: 0.65em; transform: scale(0.9); transform-origin: top center; white-space: nowrap;}
+            .cal-count-box { padding: 1px; margin-bottom: 1px; }
+
+            /* 予約カードをスマホ専用の縦並びに */
+            .res-card { flex-direction: column; padding: 15px; }
+            .res-time { width: 100%; font-size: 1.2em; border-bottom: 1px dashed #eee; margin-bottom: 10px; padding-bottom: 8px; }
+            .res-actions-new { justify-content: space-between; width: 100%; margin-top: 15px; }
+            .btn-edit-new, .btn-del-new { flex: 1; text-align: center; padding: 12px; font-size: 0.95em; }
+            
+            /* ラジオボタンと時間入力のデカ化 */
             .radio-label { min-width: 100%; }
+            #add-time-h, #add-time-m { font-size: 1.5em; padding: 15px; }
         }
     </style>
 </head>
@@ -88,7 +106,7 @@
     <div class="tab-wrapper">
         <button class="tab-btn active" id="tab-calendar" onclick="switchTab('calendar')">📅 カレンダー</button>
         <button class="tab-btn" id="tab-today" onclick="switchTab('today')">今日</button>
-        <button class="tab-btn" id="tab-add" onclick="switchTab('add')">＋ 予約登録</button>
+        <button class="tab-btn" id="tab-add" onclick="switchTab('add')">＋ 登録</button>
         <button class="tab-btn" id="tab-all" onclick="switchTab('all')">すべて</button>
     </div>
 
@@ -97,9 +115,9 @@
 
     <div id="section-calendar">
         <div style="text-align: center; margin-bottom: 10px; font-weight: bold;">
-            <button onclick="changeMonth(-1)" style="padding: 5px 15px;">＜</button>
-            <span id="cal-month-title" style="margin: 0 20px; font-size: 1.2em;">2026年 4月</span>
-            <button onclick="changeMonth(1)" style="padding: 5px 15px;">＞</button>
+            <button onclick="changeMonth(-1)" style="padding: 5px 15px; background:none; border:1px solid #ccc; border-radius:4px;">＜</button>
+            <span id="cal-month-title" style="margin: 0 15px; font-size: 1.1em; color: #A68B5B;">2026年 4月</span>
+            <button onclick="changeMonth(1)" style="padding: 5px 15px; background:none; border:1px solid #ccc; border-radius:4px;">＞</button>
         </div>
         <table class="cal-table">
             <thead>
@@ -122,7 +140,7 @@
     </div>
 
     <div id="section-add" style="display: none;">
-        <h3 id="form-title" style="text-align: center; color: #A68B5B;">新規予約の登録</h3>
+        <h3 id="form-title" style="text-align: center; color: #A68B5B; margin-top:0;">新規予約の登録</h3>
         
         <label>来店日</label>
         <input type="date" id="add-date">
@@ -137,7 +155,7 @@
         <label>来店時間</label>
         <div style="display: flex; align-items: center; gap: 10px;">
             <input type="tel" id="add-time-h" maxlength="2" placeholder="19" style="text-align: center;" oninput="if(this.value.length === 2) document.getElementById('add-time-m').focus();">
-            <b>:</b>
+            <b style="font-size:1.5em; color:#666;">:</b>
             <input type="tel" id="add-time-m" maxlength="2" placeholder="00" style="text-align: center;">
         </div>
         
@@ -152,24 +170,23 @@
         
         <label>人数</label>
         <select id="add-people">
-            <option value="1">1名</option><option value="2">2名</option><option value="3">3名</option><option value="4">4名</option>
+            <option value="1">1名</option><option value="2">2名</option><option value="3">3名</option><option value="4">4名</option><option value="5">5名以上</option>
         </select>
         
         <label>電話番号</label>
         <input type="tel" id="add-phone" placeholder="09012345678">
         
         <label>備考</label>
-        <textarea id="add-note" rows="3"></textarea>
+        <textarea id="add-note" rows="3" placeholder="要望・メモ"></textarea>
         
         <button class="btn-submit" id="btn-add-submit" onclick="adminAddReservation()">予約を確定する</button>
-        <button id="btn-cancel-edit" style="display:none; margin-top:10px; background:#ccc; border:none; width:100%; padding:10px; border-radius:4px; cursor:pointer; font-weight:bold;" onclick="cancelEdit()">編集をキャンセル</button>
+        <button id="btn-cancel-edit" style="display:none; margin-top:15px; background:#e0e0e0; color:#333; border:none; width:100%; padding:16px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:1em;" onclick="cancelEdit()">編集をキャンセル</button>
     </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-    // ★GASのURL★
     const GAS_URL = "https://script.google.com/macros/s/AKfycbw3lwm9jpy0xD5Ou5SU_1zerxmdwaVzm3S-tVA80NQ_355QsH_dy0s_GlyC1zBa6cTblA/exec";
     
     let allReservations = []; 
@@ -216,11 +233,13 @@
                     }
                     return r;
                 });
+                
                 sortReservations();
                 renderCurrentView();
                 document.getElementById('loading-overlay').style.display = 'none';
             })
             .catch(err => {
+                console.error("通信エラー", err);
                 document.getElementById('loading-overlay').style.display = 'none';
             });
     }
@@ -247,7 +266,6 @@
         else if (currentTab !== 'add') renderList();
     }
 
-    // --- カレンダー描画 ---
     function renderCalendar() {
         document.getElementById('cal-month-title').textContent = `${viewYear}年 ${viewMonth}月`;
         const body = document.getElementById('calendar-body');
@@ -269,7 +287,6 @@
                     if(j === 0) cell.classList.add('cal-sunday');
                     if(j === 6) cell.classList.add('cal-saturday');
 
-                    // ステータスでのフィルタリングを解除（キャンセル等の概念がないため全て表示）
                     const dayRes = allReservations.filter(r => r.date === dStr);
                     const m = dayRes.filter(r => r.gender === '男性').length;
                     const f = dayRes.filter(r => r.gender === '女性').length;
@@ -299,14 +316,12 @@
         }
     }
 
-    // --- 1日の予約詳細を表示 ---
     function renderDayDetail(dateStr) {
         const area = document.getElementById('day-detail-area');
         const list = document.getElementById('day-detail-list');
         const label = document.getElementById('selected-date-label');
-        const btnAdd = document.getElementById('btn-goto-add');
-
-        label.textContent = `${dateStr.replace(/-/g, '/')} の予約詳細`;
+        
+        label.textContent = `${dateStr.replace(/-/g, '/')} の予約`;
         area.style.display = 'block';
         list.innerHTML = '';
 
@@ -315,21 +330,19 @@
         if (dayRes.length === 0) {
             list.innerHTML = `<div style="text-align:center; color:#999; padding:20px;">予約はありません</div>`;
         } else {
-            dayRes.forEach(r => {
-                list.appendChild(createResCard(r));
-            });
+            dayRes.forEach(r => list.appendChild(createResCard(r)));
         }
 
-        btnAdd.onclick = () => {
+        document.getElementById('btn-goto-add').onclick = () => {
             cancelEdit();
             document.getElementById('add-date').value = dateStr;
             switchTab('add');
         };
         
-        area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        area.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // --- 新しい予約カードの生成（見やすさ特化） ---
+    // --- 予約カード（シンプル＆見やすさ特化） ---
     function createResCard(r) {
         const card = document.createElement('div');
         card.className = 'res-card';
@@ -358,7 +371,6 @@
         return card;
     }
 
-    // --- リスト表示（今日/すべてタブ用） ---
     function renderList() {
         const container = document.getElementById('reservation-container');
         container.innerHTML = '';
@@ -372,22 +384,24 @@
             return;
         }
 
+        let currentDate = '';
         filtered.forEach(r => {
-            const wrap = document.createElement('div');
-            wrap.style.marginBottom = "5px";
-            wrap.innerHTML = `<div style="font-size:0.8em; color:#666; margin:10px 0 4px; font-weight:bold;">${r.date.replace(/-/g,'/')}</div>`;
-            wrap.appendChild(createResCard(r));
-            container.appendChild(wrap);
+            if (currentDate !== r.date) {
+                currentDate = r.date;
+                const dateHeader = document.createElement('div');
+                dateHeader.style.cssText = "font-size:0.9em; color:#A68B5B; margin:20px 0 8px; font-weight:bold; border-bottom:1px solid #eee; padding-bottom:5px;";
+                dateHeader.textContent = currentDate.replace(/-/g,'/');
+                container.appendChild(dateHeader);
+            }
+            container.appendChild(createResCard(r));
         });
     }
 
-    // ▼ ▼ ▼ 編集機能ロジック ▼ ▼ ▼
-
+    // --- 編集・保存ロジック ---
     function editReservation(id) {
         const r = allReservations.find(res => res.id === id);
         if (!r) return;
 
-        // フォームに値をセット
         document.getElementById('edit-id').value = r.id;
         document.getElementById('add-date').value = r.date;
         document.getElementById('add-name').value = r.name;
@@ -404,11 +418,11 @@
 
         document.getElementById('edit-banner').style.display = 'block';
         document.getElementById('form-title').textContent = "予約内容の修正";
-        document.getElementById('btn-add-submit').textContent = "変更内容を保存する（上書き）";
+        document.getElementById('btn-add-submit').textContent = "変更内容を保存する";
         document.getElementById('btn-cancel-edit').style.display = 'block';
 
         switchTab('add');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo(0, 0);
     }
 
     function setRadioValue(name, value) {
@@ -448,7 +462,6 @@
         if (!date || !purpose || !name || !gender || !phone) return alert("必須項目が空です");
 
         const isEdit = !!editId;
-        // statusは空にしておく（バックエンドの列ズレ防止のため）
         const record = { 
             id: isEdit ? parseInt(editId) : Date.now(), 
             date, time, name, gender, people, phone, purpose, note, status: "" 
@@ -463,7 +476,7 @@
         
         sortReservations();
         renderCurrentView();
-        showToast(isEdit ? "修正を保存しました" : "登録しました");
+        showToast(isEdit ? "修正を保存しました" : "登録しました（同期中...）");
 
         if (isEdit) cancelEdit();
 
